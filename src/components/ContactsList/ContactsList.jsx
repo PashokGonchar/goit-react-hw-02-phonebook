@@ -8,7 +8,9 @@ export class ContactListPage extends Component {
   renderContacts = () => {
     return this.props.contacts.map(contact => (
       <span key={contact.id}>
-        <li>{contact.name}</li>
+        <li>
+          {contact.name} : {contact.number}
+        </li>
       </span>
     ));
   };
