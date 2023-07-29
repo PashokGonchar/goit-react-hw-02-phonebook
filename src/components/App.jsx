@@ -43,14 +43,14 @@ export class App extends Component {
 
   render() {
     const filteredContacts = this.getFilteredContacts();
-    const isContactListEmpty = this.state.contacts.length === 0;
+    const isHiddenFilterList = this.state.contacts.length === 0;
 
     return (
       <HeaderDiv>
         <HeaderH1>Phonebook</HeaderH1>
         <ContactFormPage onSubmit={this.handleSubmit} />
         <HeaderH2>Contacts</HeaderH2>
-        {!isContactListEmpty && (
+        {!isHiddenFilterList && (
           <Filter value={this.filter} onChange={this.handleFilterChange} />
         )}
         <ContactListPage
