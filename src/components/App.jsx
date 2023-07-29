@@ -1,87 +1,63 @@
 import { Component } from 'react';
-import { Title, Form, Input, Label, SubmitButton } from './app.styled';
-import ContactListPage from './ContactsList/ContactsList';
 import { nanoid } from 'nanoid';
+import ContactFormPage from './ContactForm/ContactForm';
+import ContactListPage from './ContactsList/ContactsList';
+import Filter from './ContactFilters/ContactFilters';
+import { HeaderDiv, HeaderH1, HeaderH2 } from './App.styled';
 
 export class App extends Component {
   state = {
     contacts: [],
-    name: '',
-    number: '',
+    filter: '',
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-
+  handleSubmit = (name, number) => {
     const newContact = {
-      name: this.state.name,
-      number: this.state.number,
+      name,
+      number,
       id: nanoid(),
     };
 
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
-      name: '',
-      number: '',
     }));
   };
 
-  handleInputName = e => {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-    });
+  handleFilterChange = e => {
+    this.setState({ filter: e.target.value });
   };
 
-  handleInputNumber = e => {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-    });
+  getFilteredContacts = () => {
+    const { contacts, filter } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contacts =>
+      contacts.name.toLowerCase().includes(normalizedFilter)
+    );
+  };
+
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
   };
 
   render() {
-    const { contacts, name, number } = this.state;
+    const filteredContacts = this.getFilteredContacts();
+    const isContactListEmpty = this.state.contacts.length === 0;
 
     return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Title>Phonebook</Title>
-        <Form onSubmit={this.handleSubmit}>
-          <Label htmlFor="name">Name</Label>
-          <Input
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' \\-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-            value={name}
-            onChange={this.handleInputName}
-            id={nanoid()}
-          />
-          <Label htmlFor="number">Number</Label>
-          <Input
-            type="tel"
-            name="number"
-            pattern="\\+?\\d{1,4}?[ .\\-\\s]?\\(?\\d{1,3}?\\)?[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-            value={number}
-            onChange={this.handleInputNumber}
-          />
-          <SubmitButton type="submit">Add Contacts</SubmitButton>
-        </Form>
-        <ContactListPage contacts={contacts} />
-      </div>
+      <HeaderDiv>
+        <HeaderH1>Phonebook</HeaderH1>
+        <ContactFormPage onSubmit={this.handleSubmit} />
+        <HeaderH2>Contacts</HeaderH2>
+        {!isContactListEmpty && (
+          <Filter value={this.filter} onChange={this.handleFilterChange} />
+        )}
+        <ContactListPage
+          contacts={filteredContacts}
+          onDeleteContact={this.deleteContact}
+        />
+      </HeaderDiv>
     );
   }
 }

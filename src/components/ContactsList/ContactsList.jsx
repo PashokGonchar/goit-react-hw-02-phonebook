@@ -1,28 +1,18 @@
-import { Component } from 'react';
+import { ListBtn, ListLi } from './ContactList.styled';
 
-export class ContactListPage extends Component {
-  state = {
-    contacts: [],
-  };
-
-  renderContacts = () => {
-    return this.props.contacts.map(contact => (
-      <span key={contact.id}>
-        <li>
-          {contact.name} : {contact.number}
-        </li>
-      </span>
-    ));
-  };
-
-  render() {
-    return (
-      <div>
-        <h2>Contacts</h2>
-        <ul>{this.renderContacts()}</ul>
-      </div>
-    );
-  }
-}
+const ContactListPage = ({ contacts, onDeleteContact }) => {
+  return (
+    <div>
+      <ul>
+        {contacts.map(contact => (
+          <ListLi key={contact.id}>
+            {contact.name}: {contact.number}
+            <ListBtn onClick={() => onDeleteContact(contact.id)}>Delete contact</ListBtn>
+          </ListLi>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default ContactListPage;
