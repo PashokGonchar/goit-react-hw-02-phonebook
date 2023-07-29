@@ -15,12 +15,13 @@ export class App extends Component {
   handleSubmit = (name, number) => {
     const { contacts } = this.state;
 
-    if (
-      contacts.some(
-        contact => contact.name === name && contact.number === number
-      )
-    ) {
+    if (contacts.some(contact => contact.name === name)) {
       Notiflix.Notify.info(`${name} вже існує!`);
+      return;
+    }
+
+    if (contacts.some(contact => contact.number === number)) {
+      Notiflix.Notify.info(`${number} вже є у цьому списку контактів!`);
       return;
     }
 
