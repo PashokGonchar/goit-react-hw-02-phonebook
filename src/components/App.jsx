@@ -4,6 +4,7 @@ import ContactFormPage from './ContactForm/ContactForm';
 import ContactListPage from './ContactsList/ContactsList';
 import Filter from './ContactFilters/ContactFilters';
 import { HeaderDiv, HeaderH1, HeaderH2 } from './AppNew.styled';
+import Notiflix from 'notiflix';
 
 export class App extends Component {
   state = {
@@ -12,14 +13,27 @@ export class App extends Component {
   };
 
   handleSubmit = (name, number) => {
+    const { contacts } = this.state;
+
+    if (
+      contacts.some(
+        contact => contact.name === name && contact.number === number
+      )
+    ) {
+      Notiflix.Notify.info(`${name} вже існує!`);
+      return;
+    }
+
     const newContact = {
-      name,
-      number,
+      name: name,
+      number: number,
       id: nanoid(),
     };
 
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
+      name: '',
+      number: '',
     }));
   };
 
@@ -51,7 +65,10 @@ export class App extends Component {
         <ContactFormPage onSubmit={this.handleSubmit} />
         <HeaderH2>Contacts</HeaderH2>
         {!isHiddenFilterList && (
-          <Filter value={this.filter} onChange={this.handleFilterChange} />
+          <Filter
+            value={this.state.filter}
+            onChange={this.handleFilterChange}
+          />
         )}
         <ContactListPage
           contacts={filteredContacts}
